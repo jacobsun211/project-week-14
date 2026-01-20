@@ -31,3 +31,4 @@ df['temperature_category'] = pd.cut(df['temperature'],
 df['wind_category'] = pd.cut(df['wind_speed'],
                                 bins=[0, 10, 100],
                                 labels=['calm', 'windy'])
+
