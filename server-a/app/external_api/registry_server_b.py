@@ -2,18 +2,14 @@ from external_api.client import ExternalApiClient
 from core.errors import EndpointNotFoundError
 from core.setting import settings
 
-base_url = settings.HOST_B
+base_url = 'http://' + settings.HOST_B
 port = settings.PORT_B
 
 reservoir = {
 
-    "bla": {"base_url": base_url, "port": port, "endpoint": "/bla", 
-            "method": "GET", "headers": None},
-
-    "bli": {"base_url": base_url, "port": port, "endpoint": "/bli", "method": "POST", 
-            "headers": {"Content-Type": "application/json"}}
+    "clean": {"base_url": base_url, "port": port, "endpoint": "clean", 
+            "method": "post", "headers": None},
 }
-
 
 def get_resource(resource_name: str) -> ExternalApiClient:
 

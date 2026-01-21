@@ -43,10 +43,10 @@ class ExternalWeatherService:
         records = []
 
         data_loc = {
-            "location_name": data_loc.get("name", ""),
-            "country": data_loc.get("country", ""),
-            "latitude": data_loc.get("latitude", ""),
-            "longitude": data_loc.get("longitude", "")
+            "location_name": data_loc.get("name"),
+            "country": data_loc.get("country"),
+            "latitude": data_loc.get("latitude"),
+            "longitude": data_loc.get("longitude")
         }
         
         times = data_weather["time"]
@@ -57,7 +57,7 @@ class ExternalWeatherService:
 
         for i in range(len(times)):
             record = {
-                "timestamp": datetime.fromisoformat(times[i]),
+                "timestamp": str(datetime.fromisoformat(times[i])),
                 **data_loc,
                 "temperature": temperatures[i],
                 "wind_speed": wind_speeds[i],
@@ -69,10 +69,15 @@ class ExternalWeatherService:
         return records
     
 
-    async def process(self, location_name: str) -> list[dict]:
+    async def handle_weather_pipeline(self, location_name: str) -> list[dict]:
         data_loc = await self.fetch_coordinates(location_name)
         data_weather = await self.fetch_hourly_weather(
             latitude=data_loc["latitude"],
             longitude=data_loc["longitude"]
         )
-        return self.data_organization(data_loc, data_weather)
+        data = {"data": self.data_organization(data_loc, data_weather)}
+
+        client = get_server_b_resource("clean")
+        res = await client.call(json=data)
+
+        return res.data
