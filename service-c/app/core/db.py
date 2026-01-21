@@ -1,6 +1,7 @@
 import mysql.connector
 from core.settings import setting
-
+from core.errors import MySQLError
+from contextlib import contextmanager
 
 class SQL_Manager:
     cnx = None
@@ -10,11 +11,10 @@ class SQL_Manager:
         if cls.cnx is not None:
             raise Exception
         
-        cls.cnx = mysql.connector.connect(host = setting.HOST_MYSQL, 
+        cls.cnx = mysql.connector.connect(host=setting.HOST_MYSQL, 
                                     port=setting.PORT_MYSQL,
                                     user=setting.USER_MYSQL,
-                                    password=setting.PASSWORD_MYSQL,
-                                    database=setting.DATABASE_MYSQL)
+                                    password=setting.PASSWORD_MYSQL)
         
     @classmethod
     def close(cls):
@@ -28,7 +28,7 @@ class SQL_Manager:
     @classmethod
     def init(cls):
     # delete this when the statefulset initilized the sql scehma
-        with open('service-c\sql\schema.sql', 'r') as file:
+        with open('sql\schema.sql', 'r') as file:
             sql_queries = file.read()
 
         queries = sql_queries.split(';')
@@ -36,7 +36,7 @@ class SQL_Manager:
         for query in queries:
             try:
                 if query.strip() != '':
-                    cls.cnx.cursor.execute(query)
+                    cls.cnx.cursor().execute(query)
                     cls.cnx.commit()
                     print("Query executed successfully!")
             except Exception as e:
@@ -46,7 +46,6 @@ class SQL_Manager:
     
 @contextmanager
 def get_cursor():
-    cursor = None
 
     try:
         cnx = SQL_Manager.cnx
@@ -58,7 +57,8 @@ def get_cursor():
     except Exception as e:
         if cnx:
             cnx.rollback()
-        raise e
+
+        raise MySQLError(str(e))
     
     finally:
         if cursor:

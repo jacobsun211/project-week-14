@@ -1,17 +1,16 @@
 from datetime import datetime
 from pydantic import BaseModel
 
-class Base_data(BaseModel):
-    timestamp: datetime
-    location_name: str
-    country: str
-    latitude: float
-    longitude: float
-    temperature: float
-    wind_speed: float
-    humidity: int
+class WeatherModel(BaseModel):
+    timestamp: datetime | None = None
+    location_name: str | None = None
+    country: str | None = None
+    latitude: float | None = None
+    longitude: float | None = None
+    temperature: float | None = None
+    wind_speed: float | None = None
+    humidity: int | None = None
+    temperature_category: str | None = None
+    wind_category: str | None = None
 
 
-class Extra_data(Base_data):
-    temperature_category: str 
-    wind_category: str 
