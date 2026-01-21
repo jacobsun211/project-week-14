@@ -1,3 +1,7 @@
+from typing import List
+
+from models.weather import WeatherModel
+
 
 class StorageService:
 
@@ -122,7 +126,7 @@ class StorageService:
         records = self.cursor.fetchall()
         return records
 
-    def insert_all_records(self, records):
+    def insert_all_records(self, records: list[WeatherModel]):
     
         query = """
         INSERT INTO records_weather 
@@ -132,20 +136,21 @@ class StorageService:
         params = []
 
         for record in records:
-            params.insert (
+            params.append(
                 (
-                    record["timestamp"],
-                    record["location_name"],
-                    record["country"],
-                    record["latitude"],
-                    record["longitude"],
-                    record["temperature"],
-                    record["wind_speed"],
-                    record["humidity"],
-                    record["temperature_category"],
-                    record["wind_category"]
+                    record.timestamp,
+                    record.location_name,
+                    record.country,
+                    record.latitude,
+                    record.longitude,
+                    record.temperature,
+                    record.wind_speed,
+                    record.humidity,
+                    record.temperature_category,
+                    record.wind_category
                 )
             )
 
             self.cursor.executemany(query, params)
+        return records
     

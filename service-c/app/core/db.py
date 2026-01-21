@@ -44,14 +44,14 @@ class SQL_Manager:
 
 
     
-@contextmanager
 def get_cursor():
 
     try:
         cnx = SQL_Manager.cnx
-
         cursor = cnx.cursor(dictionary=True)
+
         yield cursor
+
         cnx.commit()
 
     except Exception as e:
@@ -63,3 +63,4 @@ def get_cursor():
     finally:
         if cursor:
             cursor.close()
+
