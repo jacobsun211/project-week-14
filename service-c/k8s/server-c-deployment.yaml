@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: weather-app
+  template:
+    metadata:
+      labels:
+        app: weather-app
+    spec:
+      containers:
+      - name: weather-app
+        image: your-docker-registry/weather-app:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: MYSQL_HOST
+          value: mysql
+        - name: MYSQL_USER
+          value: root
+        - name: MYSQL_PASSWORD
+          value: pass
+        - name: MYSQL_DATABASE
+          value: weather
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: weather-app-service
+spec:
+  ports:
+  - port: 80
+    targetPort: 8000
+  selector:
+    app: weather-app
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: weather-app
+spec:
+  to:
+    kind: Service
+    name: weather-app-service
+  port:
+    targetPort: 80
